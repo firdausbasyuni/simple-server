@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Submission Demo</title>
+</head>
+<body>
+  <h1>Submission Form</h1>
+  <form id="submissionForm">
+    <input name="name" placeholder="Name" required />
+    <input name="email" type="email" placeholder="Email" required />
+    <input name="message" placeholder="Message" />
+    <button type="submit">Submit</button>
+  </form>
+
+  <h2>Last Submitted</h2>
+  <pre id="lastOutput">None yet</pre>
+
+  <h2>All Data</h2>
+  <table border="1" id="dataTable">
+    <thead>
+      <tr>
+        <th>ID</th><th>Name</th><th>Email</th><th>Message</th><th>Created At</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Detail by ID</h2>
+  <pre id="detailOutput">None selected</pre>
+
+  <script>
+    const form = document.getElementById("submissionForm");
+    const lastOutput = document.getElementById("lastOutput");
+    const dataTable = document.getElementById("dataTable").querySelector("tbody");
+    const detailOutput = document.getElementById("detailOutput");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = Object.fromEntries(new FormData(form).entries());
+      const res = await fetch("/api/post_submission_data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      lastOutput.textContent = JSON.stringify(json, null, 2);
+      await loadAll();
+      form.reset();
+    });
+
+    async function loadAll() {
+      const res = await fetch("/api/get_all_submission_data");
+      const json = await res.json();
+      dataTable.innerHTML = "";
+      json.data.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.id}</td>
+          <td>${item.name}</td>
+          <td>${item.email}</td>
+          <td>${item.message}</td>
+          <td>${item.createdAt}</td>
+          <td><button data-id="${item.id}">View</button></td>
+        `;
+        tr.querySelector("button").onclick = () => loadDetail(item.id);
+        dataTable.appendChild(tr);
+      });
+    }
+
+    async function loadDetail(id) {
+      const res = await fetch("/api/get_submission_data_by_id/" + id);
+      const json = await res.json();
+      detailOutput.textContent = JSON.stringify(json, null, 2);
+    }
+
+    loadAll();
+  </script>
+</body>
+</html>

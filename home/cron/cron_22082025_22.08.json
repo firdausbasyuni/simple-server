@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "aldiiii",
+      "email": "aldi@mail.com",
+      "message": "awww",
+      "createdAt": "2025-08-22T14:31:36.049Z"
+    },
+    {
+      "id": 2,
+      "name": "aldo",
+      "email": "aldo@mail.com",
+      "message": "aoskdoas",
+      "createdAt": "2025-08-22T14:36:26.107Z"
+    }
+  ]
+}
